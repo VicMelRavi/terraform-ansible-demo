@@ -2,8 +2,12 @@ provider "aws" {
   region = "ap-southeast-2"
 }
 
+resource "random_id" "sg_suffix" {
+  byte_length = 2
+}
+
 resource "aws_security_group" "web_sg" {
-  name        = "ansible-web-sg"
+  name        = "ansible-web-sg-${random_id.sg_suffix.hex}"
   description = "Allow SSH and HTTP"
 
   ingress {
