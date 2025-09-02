@@ -51,11 +51,13 @@ jobs:
           sudo apt install -y ansible
 
       - name: Write private key
+        working-directory: terraform-ansible-demo
         run: |
           echo "${{ secrets.EC2_PRIVATE_KEY }}" > devops-key.pem
           chmod 600 devops-key.pem
 
       - name: Generate dynamic Ansible inventory
+        working-directory: terraform-ansible-demo
         run: |
           echo "[webservers]" > hosts.ini
           EC2_IP=$(terraform output -raw web_public_ip)
