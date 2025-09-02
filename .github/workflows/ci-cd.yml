@@ -61,6 +61,9 @@ jobs:
           EC2_IP=$(terraform output -raw web_public_ip)
           echo "ec2 ansible_host=$EC2_IP ansible_user=ubuntu ansible_ssh_private_key_file=devops-key.pem" >> hosts.ini
 
+      - name: Show generated inventory
+        run: cat hosts.ini
+
       - name: Check connectivity to EC2
         run: ansible -i hosts.ini -m ping webservers
 
