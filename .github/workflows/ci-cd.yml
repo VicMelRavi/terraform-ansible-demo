@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Terraform & Ansible CI/CD
 
 on:
   push:
@@ -6,27 +6,47 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  AWS_REGION: ap-southeast-2  # Change to your AWS region
+
 jobs:
-  build:
+  deploy:
+    name: Terraform & Ansible Deploy
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up Python (if needed)
-        uses: actions/setup-python@v4
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
         with:
-          python-version: '3.x'
+          terraform_version: 1.6.0  # Update if needed
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt  # if you have a Python project
-          
-      - name: Run tests
-        run: |
-          echo "Add your test commands here"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Deploy (optional)
+      - name: Terraform Init
+        working-directory: .
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: .
+        run: terraform plan
+
+      - name: Terraform Apply
+        working-directory: .
+        run: terraform apply -auto-approve
+
+      - name: Install Ansible
         run: |
-          echo "Add your deploy commands here"
+          sudo apt update -y
+          sudo apt install -y ansible
+
+      - name: Run Ansible Playbook
+        working-directory: ./terraform-ansible-lab
+        run: ansible-playbook -i hosts.ini nginx-playbook.yml
