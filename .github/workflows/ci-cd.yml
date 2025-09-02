@@ -48,5 +48,5 @@ jobs:
           sudo apt install -y ansible
 
       - name: Run Ansible Playbook
-        working-directory: ./terraform-ansible-lab
+        working-directory: .
         run: ansible-playbook -i hosts.ini nginx-playbook.yml
