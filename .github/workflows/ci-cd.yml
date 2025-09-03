@@ -44,14 +44,16 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-
+        
+      - name: Print working directory
+        run: pwd
+        
       - name: Install Ansible
         run: |
           sudo apt update -y
           sudo apt install -y ansible
 
-      - name: Write private key
-        working-directory: terraform-ansible-demo
+      - name: Write private key       
         run: |
           echo "${{ secrets.EC2_PRIVATE_KEY }}" > devops-key.pem
           chmod 600 devops-key.pem
